@@ -1,0 +1,42 @@
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-user
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: guest
+spec:
+  profile:
+    displayName: Serhii Butko
+    email: s.butko@itransition.com
+  memberOf: [guests, itransition]
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: povedenok
+spec:
+  profile:
+    email: povedyonock@gmail.com
+  memberOf: [guests, itransition]
+---
+# https://backstage.io/docs/features/software-catalog/descriptor-format#kind-group
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: guests
+spec:
+  type: team
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: itransition
+  description: Itransition test group
+spec:
+  type: development
+  profile:
+    displayName: Itransition
+  children: []
+  members: [serhii-butko, povedenok]
+

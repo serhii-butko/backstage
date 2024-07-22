@@ -1,5 +1,5 @@
 # Stage 1 - Create yarn install skeleton layer
-FROM node:18-bookworm-slim AS packages
+FROM node:20-bookworm-slim AS packages
 
 WORKDIR /app
 COPY package.json yarn.lock ./
@@ -7,12 +7,12 @@ COPY package.json yarn.lock ./
 COPY packages packages
 
 # Comment this out if you don't have any internal plugins
-# COPY plugins plugins
+COPY plugins plugins
 
 RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {} \+
 
 # Stage 2 - Install dependencies and build packages
-FROM node:18-bookworm-slim AS build
+FROM node:20-bookworm-slim AS build
 
 # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -48,7 +48,7 @@ RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
     && tar xzf packages/backend/dist/bundle.tar.gz -C packages/backend/dist/bundle
 
 # Stage 3 - Build the actual backend image and install production dependencies
-FROM node:18-bookworm-slim
+FROM node:20-bookworm-slim
 
 # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -87,6 +87,6 @@ COPY --from=build --chown=node:node /app/packages/backend/dist/bundle/ ./
 COPY --chown=node:node app-config.yaml ./
 
 # This switches many Node.js dependencies to production mode.
-ENV NODE_ENV production
+ENV NODE_ENV=development
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]

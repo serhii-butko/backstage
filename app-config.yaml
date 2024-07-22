@@ -1,6 +1,6 @@
 app:
   title: Itransition – Backstage
-  baseUrl: http://16.170.60.61:3000
+  baseUrl: http://${APPLICATION_ADDRESS}:3000
   experimental:
     packages: all
 
@@ -28,7 +28,9 @@ backend:
   # auth:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
-  baseUrl: http://10.0.0.5:7007
+
+  baseUrl: http://${APPLICATION_ADDRESS}:7007
+
   listen:
     port: 7007
     # Uncomment the following host directive to bind to specific interfaces
@@ -38,18 +40,20 @@ backend:
     # Content-Security-Policy directives follow the Helmet format: https://helmetjs.github.io/#reference
     # Default Helmet Content-Security-Policy values can be removed by setting the key to false
   cors:
-    origin: http://10.0.0.5:3000
+    origin: http://${APPLICATION_ADDRESS}:3000
     methods: [GET, HEAD, PATCH, POST, PUT, DELETE]
     credentials: true
   # This is for local development only, it is not recommended to use this in production
   # The production database configuration is stored in app-config.production.yaml
   database:
-    client: pg
-    connection:
-      host: ${POSTGRES_HOST}
-      port: ${POSTGRES_PORT}
-      user: ${POSTGRES_USER}
-      password: ${POSTGRES_PASSWORD}
+    client: better-sqlite3
+    connection: ':memory:'
+#    client: pg
+#    connection:
+#      host: ${POSTGRES_HOST}
+#      port: ${POSTGRES_PORT}
+#      user: ${POSTGRES_USER}
+#      password: ${POSTGRES_PASSWORD}
    # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
 
 integrations:
@@ -84,9 +88,10 @@ techdocs:
 
 auth:
   experimentalExtraAllowedOrigins:
-    - http://127.0.0.1:3000
-  # see https://backstage.io/docs/auth/ to learn about auth providers
+    - https://${APPLICATION_ADDRESS}
+    - http://${APPLICATION_ADDRESS}:7007
   environment: development
+  # see https://backstage.io/docs/auth/ to learn about auth providers
   providers:
     guest: {}
     github:
@@ -107,27 +112,8 @@ scaffolder:
   defaultCommitMessage: "Initial commit"
 
 catalog:
-  import:
-    entityFilename: catalog-info.yaml
-    pullRequestBranchName: backstage-integration
   rules:
     - allow: [Component, System, API, Resource, Location]
-  locations:
-    # Local example data, file locations are relative to the backend process, typically `packages/backend`
-    - type: file
-      target: ../../examples/entities.yaml
-
-    # Local example template
-    - type: file
-      target: ../../examples/template/template.yaml
-      rules:
-        - allow: [Template]
-
-    # Local example organizational data
-    - type: file
-      target: ../../examples/org.yaml
-      rules:
-        - allow: [User, Group]
 
     ## Uncomment these lines to add more example data
     # - type: url
